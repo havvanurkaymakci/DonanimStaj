@@ -1,0 +1,74 @@
+CISCO CNNA 
+
+router-PC bağlantısı 
+(console kablo seçilir)
+router:console port 
+pc: rs-232 seri port 
+
+Düz kablo (patch kablo)ile hangi cihazlar birbirine bağlanabilir?
+pc-switch
+switch-router
+PC-hub
+
+çapraz kablo(cross kablo)ile hangi cihazlar birbirine bağlanabilir?
+router-router
+switch-switch
+pc-pc
+pc-router
+
+rollover kablo: ters bağlantısı
+1-8
+2-7
+3-6...
+
+
+PC-switch bağlantısı 
+pc port: fastEthernet 0/1
+switch port: fastEthernet 0/1
+
+ping: Ping atmak, bir bilgisayar ağında iki cihaz arasında bağlantının 
+olup olmadığını kontrol etmek için kullanılan bir ağ teşhis aracıdır. 
+
+Router portları:
+Fastethernet portları farklı networklere bağlanmak için kullanılır.
+Routerda bulunan interfaceler networkleri fastethernet0/1 ve fastethernet0/0 olarak iki farklı networke ayırır.
+Console portu : cihaza bağlantı yapmak için kullanılır.
+AUX port: genellikle uzaktan yönetim ve yedek erişim için kullanılır.
+Bu port, genellikle bir modem aracılığıyla uzaktan erişim sağlamak için kullanılır.
+Seri interfaceler WAN bağlantısı için kullanılır.
+
+
+Router konfigürasyonu
+Router>enable
+Router#    // priviledge moduna geçti
+Router#configure terminal
+Router(config-if)#    // konfigürasyon moduna geçti
+Router(config)#interface fastethernet 0/0
+Router(config-if)#ip address 192.168.1.1 255.255.255.0
+Router(config-if)#no shutdown
+
+> user mode
+user mode durumunda iken enable komutu verildiğinde priviledge(yetkili) moduna geçilir.
+#priviledge mode 
+#(config): konfigürasyon mode
+configure terminal: konfigürasyon moduna geçmeyi sağlar.
+
+
+Consolea bağlanıldığında şifre sorulması
+ Router>enable
+ Router#configure terminal
+ Router(config)#line console 0
+ Router(config-line)#password 123
+ Router(config-line)#login
+ Router(config-line)#exit
+ 
+ Enable modundan Priviledge moduna geçişte şifre oluşturma
+ Router(config)#enable password 123
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
