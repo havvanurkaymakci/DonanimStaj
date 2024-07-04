@@ -1,0 +1,43 @@
+CISCO CNNA
+
+Telnet: Bir ağ üzerinden uzaktaki bir cihazla iletişim kurmak için kullanılan bir protokoldür. 
+
+telnet bağlantısı Router conf
+Router(config)#
+Router(config)#line vty 0 15
+Router(config-line)#password 123
+Router(config-line)#
+
+Yapılan konfigürasyonların kaydedilmesi
+1.do copy running-config startup-config
+2.do write
+
+Routerda gateway göstermek için hangi tarafta bilmediği network daha fazlaysa orası gateway olarak belirlenebilir. 
+
+Routerın istediği adrese gitmesi için yapılan config
+enable
+ip route kaynak ip adres subnet mask  hedef(komşu) ip adres
+örnek: ip route 192.168.1.0 255.255.255.0  192.168.2.1
+defaul gateway network : 0.0.0.0 0.0.0.0 192.168.2.1
+
+traceroute: Ağ üzerinde belirli bir hedefe giden yol üzerindeki yönlendiricileri ve bu yönlendiricilere ulaşma 
+sürelerini belirlemek için kullanılır. 
+Router# traceroute <hedef_ip_adresi veya hedef_adı>
+örnek: do traceroute 192.168.2.1
+
+show ip route komutu: Cisco router veya Layer 3 switch cihazlarında,
+yönlendirme tablosunu (routing table) görüntülemek için kullanılır. 
+Router# show ip route
+
+iki farklı konf kısmı vardır
+1.NVRAM üzerindeki startup-config
+2.RAM üzerindeki running-config
+
+startup-config komutu, cihazın yapılandırmasını kalıcı olarak kaydetmek için kullanılır.
+running-config komutu ise, cihazın mevcut yapılandırmasını görüntülemek için kullanılır
+
+Router# copy running-config startup-config:
+Bu komut, mevcut çalışan yapılandırmayı (running-config)
+ kalıcı olarak başlangıç yapılandırma dosyasına (startup-config) kopyalar.
+
+
