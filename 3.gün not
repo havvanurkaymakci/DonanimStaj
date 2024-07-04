@@ -1,0 +1,36 @@
+CISCO CNNA
+
+TCP: güvenilirlik ve hata kontrolü sağlayan, bağlantı tabanlı bir protokoldür.
+Verilerin doğru sırayla ve eksiksiz olarak iletilmesini sağlar.
+Kontrol mekanizması vardır.
+İletilen veri boyutları büyüktür.
+
+UDP: daha hızlı, bağlantısız bir protokoldür ve güvenilirlik sağlamaz.
+Verilerin hızlı iletimi gerektiğinde, örneğin canlı video akışı veya online oyunlar için kullanılır.
+Kontrol mekanizması yoktur.
+İletilen veri boyutları daha küçüktür.
+
+FTP(File Transfer Protocol):Bir ağ üzerindeki iki bilgisayar arasında dosya transferi yapmak için kullanılan bir protokoldür.
+TFTP (Trivial File Transfer Protocol), basit ve hafif bir dosya transfer protokolüdür. TFTP, FTP'nin daha az özellikli ve daha kolay uygulanabilir bir versiyonudur. 
+Ftp'den daha hızlıdır, daha az güvenlik sağlar.
+
+TFTP ile İşletim sistemi kopyalama konfigürasyonu
+-Router üzerindeki işletim sistemini servera yedekler.
+kadR1#show flash  : iletim sisteminin adını gösterir 
+Address or name of remote host []? 192.168.1.4  // kopyalamak istediğimiz cihazin ip adresini yazıyoruz.
+Router# copy flash tftp  : kopyalama işlemi yapar.
+
+Router serial port konfigürasyonu:
+Router(config)#interface serial 0/1/0
+Router(config-if)#ip address 192.168.3.1 255.255.255.0
+Router(config-if)#no shutdown
+
+Routera bağlı cihazları gösteren komut:
+ Router(config)#do show users
+ 
+Roterdan dns kontrol etme komutu
+ ip name-server 192.168.1.4
+ ip domain-name test.com
+ 
+ Cihazın hangi cihazlara komşu olduğunu gösteren komut:
+ kadR1#show cdp neighbours
