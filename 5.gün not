@@ -1,0 +1,93 @@
+CISCO CNNA
+
+telnet server: Kullanıcıların ağ üzerinden Telnet protokolü aracılığıyla bağlanmasına 
+ve uzaktaki bir bilgisayarda komutlar çalıştırmasına izin veren bir sunucu uygulamasıdır.
+
+0x2102 Değeri: Cisco yönlendiricilerinde varsayılan configuration register değeridir.
+Router, NVRAM'deki (Non-Volatile Random Access Memory) startup-config dosyasını kullanarak önyükleme yapar.
+
+0x2142 Değeri: Yönlendiricinin NVRAM'deki startup-config dosyasını atlayarak başlatılmasını sağlar.
+
+Örneğin, 0x2142 olarak ayarlamak için: Router(config)# config-register 0x2142
+
+
+Cihaz şifre resetleme: Cihaz yediden başlatılır.
+Açılırken ctrl+break tuşuna basılarak rommon moduna geçilir.
+rommon 1> confreg 0x2142
+rommon 2> reset
+
+cihaz konfigürasyon olmadan tekrar başlatılır. 
+Router> enable
+Router# copy startup-config running-config
+
+Console şifresini kaldırma:
+Router(config)#no enable secret
+Router(config)#line console 0
+Router(config-line)#no password
+Router(config-line)#no login
+
+telnet şifresi kaldırma:
+Router(config-line)#line vty 0 807
+Router(config-line)#no password
+Router(config-line)#no login 
+
+Yönetici (enable) şifresini değiştirmek için:
+Router(config)# enable secret yeni_sifre
+
+Konfigürasyon register değerini değiştirmek için:
+Router(config)#config-register 0x2102
+Router(config)#do write  // konf kaydedilir.
+
+
+ios silme:
+Router# delete flash: ?
+Router# dosya_adı yazılır
+
+ios kopyalama:
+Router#copy tftp flash
+Address or name of remote host []? 10.3.29.240
+source filename []? <dosya_adi>
+dosyayı açmak için config mooda geçilir.
+Router(config)# boot system ?
+Router(config)# boot system flash ?
+Router(config)# boot system flash <dosya_adi>
+
+IP HESAPLAMA
+
+unicast: Tek bir gönderici ile tek bir alıcı arasında veri iletişimini ifade eder. 
+Bu tür yayınlarda, veri paketi bir kaynaktan tek bir hedefe gönderilir.
+Örneğin, bir web sitesine bağlanmak için yapılan istek unicast iletişim kullanır.
+
+Broadcast :Tek bir göndericiden tüm ağa veya belirli bir ağ segmentindeki tüm cihazlara veri gönderimini ifade eder. 
+Bu, tüm ağ düğümlerinin aynı anda veri paketini alması anlamına gelir.
+Genellikle yerel ağlar (LAN) içinde kullanılır.
+
+Multicast: Bir göndericiden belirli bir grup alıcıya veri gönderimini ifade eder.
+Bu tür yayınlarda, veri paketi yalnızca bu gruba katılan cihazlara iletilir. 
+Örneğin, bir video konferans veya canlı yayın uygulaması multicast kullanabilir.
+
+Public IP adresleri: Dünya genelindeki internet üzerindeki cihazlar tarafından erişilebilir.
+İnternet Servis Sağlayıcıları (ISP) tarafından atanır ve global bir ağa erişim sağlamak için kullanılır.
+Bu adresler, internet üzerindeki benzersiz kimliklerdir ve herhangi bir çakışma olmadan tüm dünya tarafından tanınır.
+örnek:172.217.16.142 
+ 
+Private IP adresleri: Yalnızca yerel ağlar içinde kullanılır ve dış dünya tarafından doğrudan erişilemez. Bu IP adresleri,
+ev ağları veya iş yerleri gibi yerel ağlarda cihazlar arasında iletişim sağlamak için kullanılır.
+ 
+Özel IP adres aralıkları (IPv4):
+10.0.0.0 - 10.255.255.255
+172.16.0.0 - 172.31.255.255
+192.168.0.0 - 192.168.255.255
+
+Subnet mask: IP adresinin ağ kısmını ve host kısmını ayırt etmek için kullanılan bir numaradır.
+IP adresine uygulandığında, ağın hangi bölümünün ağ adresi olduğunu ve hangi bölümünün cihazlara (host'lara) ait olduğunu belirler.
+ 
+Örneğin 192.168.1.10/24 ve 192.168.1.12/24 IP adreslerine sahip iki cihaz var.
+İki cihazın da subnet mask kısımları eşleştiği için haberleşebilir
+İki cihazın da subnet mask kısımları eşleştiği için haberleşebilir
+
+
+Örneğin 192.168.1.10/24 ve 192.168.1.12/16 IP adreslerinin subnet mask kısımları eşleşmese de bu cihazlar haberleşebilir.
+
+192.168.1.10/24 ve 192.168.1.12/24 IP adreslerine sahip iki cihaz router ile birbirine bağlanırsa haberleşemez. 
+İki cihaz arasına router koyulursa farklı networklerde olmalıdır.
