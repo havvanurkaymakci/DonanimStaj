@@ -1,0 +1,139 @@
+CISCO CNNA
+
+**IP SUBNETTING**
+
+Örnek IP: 192.168.1.0/24
+
+Bir networkte kullanılabilecek max ip sayısı : 2^n-2 
+2^8-2 = 254 ip verilebilir.
+
+örnek: 172.16.0.0 ip adresi için kullanılabilecek max ip sayısı: 2^16-2
+
+192.168.1.0/24 -> 192.168.1.00000000 : network id numarasıdır.
+Br networkteki bilgisayara id olarak verilemez.
+
+192.168.1.1/24 -> 192.168.1.11111111 : broeadcast ip : en büyük kombinasyon 
+Br networkteki bilgisayara id olarak verilemez. Pc broadcast yayın göndrirken bu ip adresini kullanır.
+
+Örnek: 172.176.1.10 ve 172.192.2.20 ip adreslerine sahip iki cihazın subnet maskı kaç olursa haberleşebilirler
+172.1/0110000
+172.1/1000000  subnet mask 9 olursa haberleşebilirler.  
+
+Örnek: 200.1.1.0/30 ip adresi için
+kullanılabilir ağ(ip) sayısı: 2^2-2 = 2
+subnet mask: 255.255.255.252 -> 255.255.255.11111100
+network id: 200.1.1.00000000
+broadcast ip: 200.1.1.3
+verilebilcek ip adresleri: 200.1.1.00000001 , 200.1.1.00000010
+
+Örnek: birbirine switch cihazı ile bağlı iki tane pc grubu olsun.
+1.grup IP adresleri: 200.1.1.2/30 , 200.1.1.1/30
+2. grup IP adresleri: 200.1.1.5/30 , 200.1.1.6/30 
+bu iki grup birbirleriyle haberleşemez.
+
+**RIP**
+Dynamic Routing Dinamik Yönlendirme (Dynamic Routing)
+Dinamik yönlendirme, ağdaki veri paketlerinin hedeflerine ulaşmak için izledikleri yolları otomatik olarak belirleyen bir yönlendirme yöntemidir. 
+Bu yöntem, yönlendiricilerin birbirleriyle bilgi alışverişinde bulunarak, ağdaki mevcut duruma göre en iyi yolu seçmelerini sağlar.
+
+Yönlendirme Protokolleri:
+RIP (Routing Information Protocol): Mesafe vektör algoritması kullanır.
+OSPF (Open Shortest Path First): Bağlantı durumu algoritması kullanır.
+EIGRP (Enhanced Interior Gateway Routing Protocol): Mesafe vektör ve bağlantı durumu algoritmalarının bir karışımını kullanır.
+
+Statik Yönlendirme (Static Routing)
+Statik yönlendirme, ağdaki veri paketlerinin hedeflerine ulaşmak için izledikleri yolların manuel olarak belirlenmesi ve yönlendiricilere elle yapılandırılmasıdır.
+Statik yönlendirme tabloları, yönlendiricilere sabit bir şekilde tanımlanır ve değişiklikler manuel olarak yapılır.
+
+RIP konifgürasyonu
+Router(config)#router rip
+Router(config-router)#network 192.168.6.0
+Router(config-router)#network 192.168.5.0
+Router(config-router)#version 2  // rip v2 ile çalışmaya başlar.
+
+Router(config-router)#network x.x.x.x : belirli bir ağ adresinin dinamik yönlendirme protokolü 
+aracılığıyla duyurulmasını ve diğer yönlendiricilerle paylaşılmasını sağlar. 
+
+RIP V1: broadcast çalışır. 
+RIP V2: multicast çalışır
+
+no auto-summary komutu: Otomatik özetlemeyi devre dışı bırakır.
+Bu komut, özellikle sınıfsız yönlendirme (classless routing)
+yapmak ve daha doğru ve ayrıntılı yönlendirme bilgileri iletmek için kullanılır.
+
+komut önceliği şu şekilde olmalıdır: 
+ router rip
+ version 2
+ no auto-summary
+ network 192.168.1.0
+ network 192.168.2.0
+
+Administrative Distance (AD): Bir yönlendiricinin birden fazla yönlendirme protokolünden gelen yönlendirme bilgileri arasında 
+en güvenilir olanını seçmesine yardımcı olan bir değerdir.
+RIP : AD değeri 120'dir.
+OSPF : AD değeri 110'dur.
+
+Örneğin, bir yönlendirici aynı hedefe hem RIP hem de OSPF tarafından gelen yönlendirme bilgileri alıyorsa, 
+OSPF'in AD değeri daha düşüktür (110), dolayısıyla yönlendirici OSPF tarafından gelen yönlendirme bilgilerini tercih eder.
+
+*Rip protokolü hıza bakmaz, geçiş yolundaki router sayısına bakar.
+*Rip max 15 router için çalışabilir.
+
+passive-interface komutu: RIP veya diğer yönlendirme protokollerinde kullanılan bir yönlendirici arayüzünü pasif hale getirmek için kullanılır. 
+Pasif hale getirilen bir arayüz, o arayüz üzerinde RIP paketlerini göndermez veya dinlemez.
+
+
+** OSPF (Open Shortest Path First)  **
+
+OSPF, Geniş çaplı kullanımıyla bilinen, dinamik yönlendirme protokollerinden biridir. 
+OSPF, karmaşık ve büyük ölçekli ağlarda etkili bir şekilde yönlendirme yapmak için tasarlanmıştır.
+
+Link-State Yönlendirme Protokolü: OSPF, link durumu bilgilerini (link-state information) kullanarak ağ topolojisini belirler ve yönlendirme tablolarını oluşturur. 
+Bu sayede ağın genel durumu hakkında daha ayrıntılı ve doğru bilgi elde edilir.
+
+*OSPF Konfigürasyonu
+router ospf <processid>
+network 192.168.1.0 <wilcard_mask> area
+
+örnek:
+router ospf 1
+network 192.168.1.0 0.0.0.255 area 0
+
+** EIGRP **
+EIGRP (Enhanced Interior Gateway Routing Protocol): Cisco tarafından geliştirilmiş bir yönlendirme protokolüdür. 
+Hybrid protocol olarak bilinir.
+AD değeri : 90
+Ağın performansını artırmak, hızlı yakınsama sağlamak ve yönetimi kolaylaştırmak için kullanılır.
+summarization açık olarak gelir.
+
+EIRGP Konfigürasyonu
+Router(config)#router eigrp ?
+  <1-65535>  Autonomous system number
+Router(config)#router eigrp 1
+Router(config-router)#no auto-summary
+Router(config-router)#network 192.168.1.0
+Router(config-router)#network 172.16.1.0
+
+*Redistribution: Bir yönlendirme protokolü (örneğin, EIGRP) tarafından öğrenilen yönlendirme bilgilerini başka bir yönlendirme protokolüne (örneğin, OSPF)yeniden dağıtma işlemidir.
+Bu işlem, farklı yönlendirme protokollerinin bir arada çalıştığı ağlarda kritik öneme sahiptir.
+Farklı routing protokollleri kullanan routerları,areaları birbirine öğretmek için kullanılır.
+
+ redistribute ospf 1 metric <bandwidth> <delay> <reliable> <Load> <MTU>
+
+* EIGRP'den OSPF'ye Redistribution
+router ospf 1
+ redistribute eigrp 10 subnets
+
+* OSPF'den EIGRP'ye Redistribution
+ router eigrp 10
+ redistribute ospf 1 metric 10000 100 255 1 1500
+
+* örnek(OSPF to EIGRP):
+ router eigrp 1
+ Router(config-router)#redistribute ospf 1 metric 100000 10 255 1 10
+ 
+* örnek (EIGRP to OSPF): 
+ router ospf 1
+ redistribute eigrp 1 subnets
+ 
+ *no router eigrp 1: eigrp konfigürasyonunu geri almak için kullanılır.
