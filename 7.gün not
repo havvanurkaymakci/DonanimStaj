@@ -1,0 +1,211 @@
+CISCO CNNA
+
+** Access List (ACL) **
+Ağlarda "Access List" (Erişim Listesi), ağ trafiğini kontrol etmek ve yönetmek için kullanılan bir dizi kuraldır. 
+Access List'ler, belirli trafiğin izin verilmesine veya engellenmesine karar verir ve genellikle router'lar, switch'ler veya firewall'lar üzerinde uygulanır.
+Access List'ler, belirli IP adresleri, protokoller, port numaraları ve diğer kriterler baz alınarak trafik filtrelemeyi sağlar.
+
+Inbound Access List: Gelen trafiği kontrol eder ve filtreler. 
+Outbound Access List: Giden trafiği kontrol eder ve filtreler. 
+
+Standart Access List: (hedefe yakın)Sadece kaynak IP adresine dayalı olarak trafiği kontrol eden erişim listeleridir. Sadece kaynak IP adresine göre filtreleme yaparlar.
+Extended Access List: (kaynağa yakın) Kaynak ve hedef IP adresleri, protokoller (TCP, UDP, ICMP gibi), port numaraları gibi daha spesifik kriterlere dayalı olarak trafiği kontrol eden erişim listeleridir. 
+
+Standart access list kaynağa yakın tarafta bağlanır.
+
+Örnek: 192.168.1.2/24 adresli PCden gelen verinin 10.1.2.2/24 adresli PCye ulaşmasını engellemek için;
+ 10.1.2.2/24 adresli PCye en yakın Router konfigüre edilir.
+ 
+ Router(config)#access-list ?
+ Router(config)#access-list 1 ?
+ Router(config)#access-list 1 deny?
+ Router(config)#access-list 1 deny host 192.168.1.2
+ 
+Router(config)#
+Router(config)#interface fastethernet 0/1
+Router(config-if)#ip access-group 1 out
+Router(config-if)#
+
+**
+Extended ACL konfigürasyonu
+Router(config)#access-list ?
+Router(config)#access-list 100?
+Router(config)#access-list 100 deny ?
+Router(config)#access-list 100 deny  icmp ?
+Router(config)#access-list 100 deny  icmp host 192.168.1.2 ?
+Router(config)#access-list 100 deny  icmp host 192.168.1.2 host 10.1.1.2
+Router(config)#access-list 100 permit ip any any  // bundan sonraki cihazların hepsine izin verir.
+
+inbound konf
+Router(config)#
+Router(config)#interface fastethernet 0/0 
+Router(config-if)#ip access-group 100 in
+
+*Router(config)#access-list 100 deny  <protokol> host <source> host <destination>
+
+
+* Örnek konfigürasyon adımları
+serverda tcp 80'e geliyorsa izin ver
+Herhangi bir yerden 192.168.3.3 adresine geliyorsa reddet
+Herhangi bir yerden 192.168.3.3 hariç geliyorsa izin ver.
+
+access-list 100 permit tcp 80 any 192.168.3.3
+access-list 100 deny ip any 192.168.3.3
+access-list 100 permit ip any any 
+
+access-list 100 deny any any
+*
+
+*konfigürasyon işlemi
+Router(config)#access-list 100 permit tcp any host 192.168.3.3 eq 80
+Router(config)#access-list 100 deny ip any host 192.168.3.3
+Router(config)#access-list 100 permit ip any any
+Router(config)#
+Router(config)#interface fastethernet 0/0
+Router(config-if)#ip access-group 100 out
+Router(config-if)#
+**
+
+**Named access-list : daha okunabilir ve yönetilebilir.
+
+Örnek:
+Router(config)#ip access-list standard test 
+Router(config-std-nacl)#deny 192.168.3.2 
+Router(config-std-nacl)#permit any
+Router(config-std-nacl)#
+
+Router(config-std-nacl)#do show access-list
+Standard IP access list test
+    10 deny host 192.168.3.2
+    20 permit any
+	
+//başka bir deny eklemek istiyoruz.
+ 
+Router(config-std-nacl)#no permit any
+Router(config-std-nacl)#deny 192.168.1.2
+Router(config-std-nacl)#permit any
+
+// güncel access-list
+
+Standard IP access list test
+    10 deny host 192.168.3.2
+    20 deny host 192.168.1.2
+    30 permit any
+	
+**
+
+Switch Konfigürasyonları
+
+// switch imini değiştirme
+Switch(config)#hostname newname
+
+// mesaj yazdırma
+Switch(config)#banner motd *
+Enter TEXT message.  End with the character '*'.
+giris mesaji
+*
+
+//console şifresi verme
+Switch(config)#line console 0
+Switch(config-line)#password sifre
+Switch(config-line)#login
+
+// enable şifresi verme
+Switch(config)#enable secret sifre
+
+//telnet şifresi verme
+Switch(config)#line vty 0 15
+Switch(config-line)#password sifre
+
+// ip verme
+Switch(config-line)#interface vlan 1 
+Switch(config-if)#ip address 192.168.1.100 255.255.255.0
+Switch(config-if)#no shutdown
+
+
+** VLAN **
+VLAN (Virtual Local Area Network), fiziksel ağ cihazlarını kullanarak mantıksal ağ segmentleri oluşturma yöntemidir.
+VLAN'lar, aynı fiziksel ağ altyapısı üzerinde birden fazla, izole edilmiş ağ oluşturmanızı sağlar. 
+Bu, ağ trafiğini izole etmek, güvenliği artırmak ve ağ yönetimini kolaylaştırmak için kullanılır.
+Her VLAN, kendi ayrı broadcast domain'ine sahiptir. Bu, bir VLAN'daki broadcast trafiğinin diğer VLAN'lara yayılmasını engeller.
+Ağları izole ederek güvenliği artırır.
+	
+VLAN kullanmadan her bir grup farklı bir IP ağı ve farklı bir switch üzerindedir.
+VLAN kullanıldığında switch, portlarıyla uygun VLAN’lar üzerinde konfigüre edilir. 
+Hala her bir grup farklı bir IP ağı üzerindedir, fakat gruplar aynı switch üzerindedirler
+
+port based vlan: Fiziksel portlar üzerinden yapılan VLAN yapılandırmasını ifade eder.
+mac based vlan: Cihazların MAC adreslerine göre VLAN'lara atanmasını sağlar.
+
+VLAN oluşturma
+Switch(config)#vlan 2 
+Switch(config-vlan)#name muhasebe
+
+Switch(config)#interface fastethernet 0/2
+Switch(config-if)#switchport mode access
+Switch(config-if)#switchport access vlan 2
+
+*
+Örnek: Switch portlarını vlanlara göre gruplama
+Switch(config)#interface range fastethernet 0/1-10
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 10
+
+	
+Switch(config-if-range)#int range fastethernet 0/11-20
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 20
+*
+
+// vlan20'ye ip adresi atama
+Switch(config)#interface vlan 20
+Switch(config-if)#ip address 192.168.2.100 255.255.255.0
+*
+
+LAN-LAN haberleşmesi için L3 switch kullanılır.
+
+*Multilayer switch: hem Layer 2 (Veri Bağlantı Katmanı) hem de Layer 3 (Ağ Katmanı) fonksiyonlarını yerine getirebilen ağ cihazlarıdır. 
+Bu switch'ler, hem geleneksel switch özelliklerine sahip olup aynı zamanda yönlendirme (routing) yapabilme yeteneğine sahiptirler.
+
+* Trunk Port *
+Trunk port, bir switch portunun birden fazla VLAN'ı taşımasını sağlayan bir yapılandırma modudur. Trunk portları, genellikle switch'ler arasında veya 
+switch ile router arasında bağlantı kurmak için kullanılır ve birden fazla VLAN'a ait trafiği tek bir fiziksel bağlantı üzerinden taşır.
+Bu portlarda encapsulation vardır:
+ISL
+802.1Q
+
+*Switch trunk mode konfigürasyonu
+Switch(config)#interface fastethernet 0/24
+Switch(config-if)#switchport mode trunk
+
+*Router Interface VLANlara bölme
+Router(config)#interface fastethernet 0/0.10
+Router(config-subif)#encapsulation dot1q 10
+Router(config-subif)#ip address 192.168.1.1 255.255.255.0
+
+Router(config)#interface fastethernet 0/0.20
+Router(config-subif)#encapsulation dot1q 20
+Router(config-subif)#ip address 192.168.2.1 255.255.255.0
+
+Cihazı yeniden başlatmak için : reload
+
+
+*VTP :VLAN bilgilerinin ağdaki diğer cihazlar ile paylaşılması amacı ile oluşturulan bir protokoldür.
+Böylece geniş bir ağ içerisindeki tüm cihazlar için aynı VLAN konfigürasyonunun yapılmasına gerek kalmaz.
+VTP, switch'lerin VLAN bilgilerini birbirlerine iletmelerini sağlayarak, VLAN yapılandırmasını daha kolay ve tutarlı hale getirir.
+
+*Switch cihazlarının birbiriyle VLAN alışverişi yapabilmesi için Trunk mode, aynı VTP domain ve aynı VTP password olması gerekir.
+Şifre belirlenmezse konfigürasyonlar switchlerin hepsine yapılır.
+
+
+*VTP Modları
+ Server - Client - Transparent 
+ Server Mode: Bu modda çalışan switch üzerinde VLAN oluşturulur, değiştirilir ve silinebilir.
+ Transparent Mode: Bu modda çalışan switch VTP'den VLAN bilgilerini alabildiği gibi, kendi üzerinde de VLAN oluşturulabilir. Ancak, kendi üzerinde üretilen VLAN bilgilerini diğer switchler ile paylaşmaz.
+ Client Mode: Bu modda çalışan switch trunk portları üzerinden VLAN bilgisini alırlar ve VLAN bilgilerini diğer trunk portlara taşırlar. Ancak kendi üzerilerinde VLAN oluşturamaz ya da silemezsiniz.
+
+VTP durumunu gösteren komut: do show vtp status
+VTP şifre belirleme komutu: vtp password 123
+VLAN trafiği esnekliği sağlamak amacıyla portları taşımaz.
+
+
