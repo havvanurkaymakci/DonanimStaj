@@ -1,0 +1,54 @@
+CISCO CNNA
+
+*relay agent: genellikle DHCP (Dynamic Host Configuration Protocol) bağlamında kullanılan bir terimdir. 
+Bir relay agent, bir DHCP istemcisinden gelen DHCP mesajlarını, istemciyle aynı ağda bulunmayan bir DHCP sunucusuna ileten bir ağ cihazıdır. 
+Relay agent'lar, DHCP istemcileri ve sunucuları farklı alt ağlarda olduğunda kullanılır.
+DHCP istemcilerinden gelen mesajları alır.
+Bu mesajları uygun DHCP sunucusuna iletir.
+DHCP sunucusundan gelen yanıtları alır ve istemciye geri iletir.
+
+** NAT **
+(Network Address Translation), ağ adresi çevrimi anlamına gelir ve ağdaki IP adreslerinin, özellikle özel (private) IP adreslerinin, başka bir ağdaki IP adreslerine çevrilmesi işlemini ifade eder. 
+NAT, internet üzerinde sınırlı sayıda IP adresi kullanarak birden fazla cihazın internete erişmesine olanak tanır ve güvenlik sağlar.
+iki taraf private: routing
+iki taraf public: routing
+public-private: NAT
+
+[İç Ağ (Private IP)]
+192.168.1.10  ---->  [NAT Yönlendirici]  ---->  [Dış Ağ (Public IP)]
+                 IP Çevrimi Yapılır          203.0.113.10
+
+*NAT İŞLEM ADIMLARI
+Adım 1: 192.168.1.10 IP adresine sahip bir cihaz, internet üzerindeki bir kaynağa erişim talebinde bulunur.
+Adım 2: Yönlendirici, bu isteği alır ve NAT işlemi uygular.
+Adım 3: Yönlendirici, özel IP adresini (192.168.1.10) genel bir IP adresine (203.0.113.10) çevirir ve paketi internete gönderir.
+Adım 4: İnternetten gelen yanıt, genel IP adresine (203.0.113.10) gönderilir.
+Adım 5: Yönlendirici, bu yanıtı alır, NAT tablosunu kullanarak özel IP adresine (192.168.1.10) çevirir ve paketi iç ağa iletir.
+
+*Özel IP adres aralıkları (IPv4):
+10.0.0.0 - 10.255.255.255
+172.16.0.0 - 172.31.255.255
+192.168.0.0 - 192.168.255.255
+
+*PAT: 
+PAT (Port Address Translation), NAT türlerinden biridir ve birden fazla özel IP adresinin tek bir genel IP adresini paylaşmasına olanak tanır. 
+PAT, her özel IP adresini ve port numarasını benzersiz bir genel IP adresi ve port numarası kombinasyonuna çevirir. Bu sayede, sınırlı sayıda genel IP adresi kullanarak birçok cihazın internete erişimini sağlar.
+
+*NAT Konfigürasyonu
+Router(config)#access-list 1 permit ?
+Router(config)#access-list 1 permit 192.168.1.0 0.0.0.255
+Router(config)#interface fastethernet 0/0
+Router(config-if)#ip nat inside  // nat girişi
+Router(config-if)#interface fastethernet 0/1
+Router(config-if)#ip nat outside   //nat çıkışı
+Router(config)#ip nat inside source list 1 interface fastethernet 0/1   //bu komutla aynı anda yalnızca bir kişi inte çıkabilir.
+Router(config)#ip nat inside source list 1 int fa 0/1 overload   // PAT işlemi uygular.
+Router(config)#do debug ip nat
+
+** belirli bir iç IP adresi ve port numarasını belirli bir dış IP adresi ve port numarası ile statik olarak eşlemek için konf
+Router(config)#ip nat inside source static 
+Router(config)#ip nat inside source static tcp 10.1.1.1 80 192.168.1.2 80 
+Router(config)#ip nat inside source static tcp 192.168.1.2 80 1.1.1.1 80
+
+*Router(config)#do show ip nat translations: mevcut nat dönüşütmlerini gösterir.
+
